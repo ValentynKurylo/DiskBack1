@@ -17,9 +17,7 @@ module.exports = {
     
     getUserById: async (req, res)=>{
         let id = req.params._id
-        console.log(id)
         let user = await userService.getUserById(id)
-        console.log(user)
         res.json(user)
     },
     

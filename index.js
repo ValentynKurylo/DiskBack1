@@ -26,7 +26,7 @@ app.use('/file', fileRouter)
 
 const start = async () =>{
     try{
-        //await mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.zusjqxj.mongodb.net/?retryWrites=true&w=majority`)
+        mongoose.set('strictQuery', false);
         await mongoose.connect(process.env.DB_CONECT)
         app.listen(Number(process.env.PORT), ()=>{
             console.log("Server started on port ", Number(process.env.PORT))

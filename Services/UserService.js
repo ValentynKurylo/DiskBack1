@@ -10,21 +10,42 @@ module.exports = {
     },
 
     async postUser(user){
-        let hashPassword = await bcrypt.hash(user.password, 6)
-        user.password = hashPassword
-        const u = new modelUser(user)
-        await u.save()
-        await fileService.createDir(new fileModel({user: u.id, name: ''}))
+        try {
+            let hashPassword = await bcrypt.hash(user.password, 6)
+            user.password = hashPassword
+            const newUser = new modelUser(user)
+            await newUser.save()
+            await fileService.createDir(new fileModel({user: newUser.id, name: ''}))
+        } catch (e) {
+            return {
+                message: `Server Error: ${e}`,
+                status: 500
+            }
+        }
     },
     
     async getUserById(id){
-        let user = await modelUser.findById(id)
-        return user
+        try {
+            let user = await modelUser.findById(id)
+            return user
+        } catch (e) {
+            return {
+                message: `Server Error: ${e}`,
+                status: 500
+            }
+        }
     },
     
     async getUserByEmail(email){
-        const user = await modelUser.findOne({email})
-        return user
+        try {
+            const user = await modelUser.findOne({email})
+            return user
+        } catch (e) {
+            return {
+                message: `Server Error: ${e}`,
+                status: 500
+            }
+        }
     },
     
     async deleteUser(id){
@@ -35,10 +56,9 @@ module.exports = {
                 status: 200
             }
         } catch (e) {
-            console.log(e)
             return {
-                message: "Something wrong",
-                status: 400
+                message: `Server Error: ${e}`,
+                status: 500
             }
         }
     }

@@ -22,9 +22,8 @@ module.exports = {
                 status: 200
             }
         } catch (e) {
-            console.log(e)
             return {
-                message: "Server Error",
+                message: `Server Error: ${e}`,
                 status: 500
             }
         }
@@ -66,9 +65,8 @@ module.exports = {
                 status: 200
             }
         } catch (e) {
-            console.log(e)
             return {
-                message: "Wrong email or password",
+                message: `Server Error: ${e}`,
                 status: 500
             }
         }
@@ -97,9 +95,8 @@ module.exports = {
                 status: 200
             }
         } catch (e) {
-            console.log(e)
             return {
-                message: "Server Error",
+                message: `Server Error: ${e}`,
                 status: 500
             }
         }

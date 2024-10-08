@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken')
 
-const userService = require("../Services/UserService")
-
 module.exports = {
     isAuth: (req, res, next)=>{
         if (req.method === 'OPTIONS') {

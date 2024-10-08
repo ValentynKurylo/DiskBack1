@@ -7,7 +7,6 @@ module.exports = {
         const user = req.user
         try {
             const file = new fileModel({name, type, parent, user: user.id})
-            console.log(file.parent)
             const parentFile = await fileModel.findOne({_id: parent})
             if(!parentFile){
                 file.path = name
@@ -62,10 +61,8 @@ module.exports = {
 
     downloadFile: async (req, res)=>{
         const id = req.query.id
-        console.log(id)
         const userId = req.user.id
         const result = await fileService.downloadFile(id, userId)
-        console.log(result)
         res.download(result.path, result.name)
     },
 

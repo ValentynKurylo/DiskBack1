@@ -2,8 +2,8 @@ const authService = require("../Services/authService")
 
 module.exports = {
     registration: async (req, res)=>{
-        const body = req.body
-        const email = req.body.email
+        const { body } = req
+        const email = body.email
         const message = await authService.registration(body, email)
         res.json(message)
     },

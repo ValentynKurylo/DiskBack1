@@ -1,15 +1,14 @@
 const fs = require("fs")
-const Path = require("path")
+const Path = require('path');
 const uuid = require("uuid")
 
 const fileModel = require("../models/fileModel")
 const userModel = require("../models/user")
-const userService = require("./UserService")
 
 module.exports = {
     async createDir(file){
-        let filePath = `${process.env.FILE_PATH}\\${file.user}\\${file.path}`
-        //let filePath = Path.resolve(process.env.FILE_PATH, file.user, file.path)
+       // let filePath = `${process.env.FILE_PATH}\\${file.user}\\${file.path}`
+        let filePath = Path.join(process.env.FILE_PATH, file.user, file.path)
         try {
             if(!fs.existsSync(filePath)){
                 fs.mkdirSync(filePath)
@@ -26,9 +25,8 @@ module.exports = {
             }
         }
         catch (e){
-            console.log(e)
             return {
-                message: "Something wrong",
+                message: `Server Error: ${e}`,
                 status: 500
             }
         }
@@ -76,14 +74,16 @@ module.exports = {
             user.usedSpace += file.size
             let path
             if(parent){
-                path = `${process.env.FILE_PATH}\\${user._id}\\${parent.path}\\${file.name}`
+                //path = `${process.env.FILE_PATH}\\${user._id}\\${parent.path}\\${file.name}`
+                path = Path.join(process.env.FILE_PATH, user._id, parent.path, file.name)
             }else {
-                path = `${process.env.FILE_PATH}\\${user._id}\\${file.name}`
+                //path = `${process.env.FILE_PATH}\\${user._id}\\${file.name}`
+                path = Path.join(process.env.FILE_PATH, user._id, file.name)
             }
 
             if(fs.existsSync(path)){
                 return {
-                    message: "Such file is alreadu exist",
+                    message: "Such file is already exist",
                     status: 400
                 }
             }
@@ -92,7 +92,6 @@ module.exports = {
             const type = file.name.split('.').pop()
            let filePath = file.name
             if(parent){
-                console.log(parent.path)
                 filePath = parent.path + '\\' + file.name
             }
             const dbFile = new fileModel({
@@ -123,8 +122,8 @@ module.exports = {
     async downloadFile(id, userId){
         try {
             const file = await fileModel.findOne({_id: id, user: userId})
-            const path = process.env.FILE_PATH + '\\' + userId + '\\' + file.path
-            //const path = Path.resolve(process.env.FILE_PATH, userId, file.path, file.name)
+            //const path = process.env.FILE_PATH + '\\' + userId + '\\' + file.path
+            const path = Path.join(process.env.FILE_PATH, userId, file.path, file.name)
             if(fs.existsSync(path)){
                 return {
                     "path": path,
@@ -147,10 +146,8 @@ module.exports = {
     },
 
     deleteFileFromServer(file){
-        console.log('ffffffffffffff', process.env.FILE_PATH,  file.user, file.path)
-        //const path = Path.resolve(process.env.FILE_PATH, file.user, file.path)
-        const path = process.env.FILE_PATH + '\\' + file.user + '\\' + file.path
-        console.log(path)
+        //const path = process.env.FILE_PATH + '\\' + file.user + '\\' + file.path
+        const path = Path.join(process.env.FILE_PATH, file.user, file.path)
         if(file.type === "dir"){
             fs.rmdirSync(path)
         }else{
@@ -177,9 +174,8 @@ module.exports = {
                 status: 200
             }
         } catch (e) {
-            console.log(e)
             return {
-                message: "This dir is not emty",
+                message: `Server error: ${e}`,
                 status: 500
             }
         }
@@ -195,9 +191,8 @@ module.exports = {
             user.save()
             return user
         } catch (e) {
-            console.log(e)
             return {
-                message: "Avatar upload error",
+                message: `Avatar upload error: ${e}`,
                 status: 500
             }
         }
@@ -207,12 +202,11 @@ module.exports = {
             const user = await userModel.findById(id)
             fs.unlinkSync(Path.resolve(process.env.STATIC, user.avatar))
             user.avatar = null
-            user.save()
+            await user.save()
             return user
         } catch (e) {
-            console.log(e)
             return {
-                message: "Avatar delete error",
+                message: `Avatar delete error: ${e}`,
                 status: 500
             }
         }
