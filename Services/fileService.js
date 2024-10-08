@@ -7,7 +7,6 @@ const userModel = require("../models/user")
 
 module.exports = {
     async createDir(file){
-       // let filePath = `${process.env.FILE_PATH}\\${file.user}\\${file.path}`
         let filePath = Path.join(process.env.FILE_PATH, file.user, file.path)
         try {
             if(!fs.existsSync(filePath)){
@@ -74,10 +73,8 @@ module.exports = {
             user.usedSpace += file.size
             let path
             if(parent){
-                //path = `${process.env.FILE_PATH}\\${user._id}\\${parent.path}\\${file.name}`
                 path = Path.join(process.env.FILE_PATH, user._id, parent.path, file.name)
             }else {
-                //path = `${process.env.FILE_PATH}\\${user._id}\\${file.name}`
                 path = Path.join(process.env.FILE_PATH, user._id, file.name)
             }
 
@@ -122,7 +119,6 @@ module.exports = {
     async downloadFile(id, userId){
         try {
             const file = await fileModel.findOne({_id: id, user: userId})
-            //const path = process.env.FILE_PATH + '\\' + userId + '\\' + file.path
             const path = Path.join(process.env.FILE_PATH, userId, file.path, file.name)
             if(fs.existsSync(path)){
                 return {
@@ -146,7 +142,6 @@ module.exports = {
     },
 
     deleteFileFromServer(file){
-        //const path = process.env.FILE_PATH + '\\' + file.user + '\\' + file.path
         const path = Path.join(process.env.FILE_PATH, file.user, file.path)
         if(file.type === "dir"){
             fs.rmdirSync(path)
